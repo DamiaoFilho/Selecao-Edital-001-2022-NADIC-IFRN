@@ -52,7 +52,7 @@ def listElections(request):
     Election.att()
     Elections = Election.objects.all()
     for i in Elections:
-        if(i.finalDate >= date.today()):
+        if(i.finalDate <= date.today()):
             i.isEnd = True
             obj = Candidate.objects.filter(Election = i.id_Election)
             x = 0
@@ -65,13 +65,11 @@ def listElections(request):
             win.isWinner = True
             win.save()
 
-    return render(request, 'election_list.html', {'election':Election.objects.filter(isEnd = False)})
+    return render(request, 'systemElections/election_list.html', {'election':Election.objects.filter(isEnd = False)})
     
 def showCandidates(request, id):
     selected = Candidate.objects.filter(Election = id)
-    for i in selected:
-        print(i.Election)
-    return render(request, 'candidate_list.html', context={'candidates' : selected})
+    return render(request, 'systemElections/candidate_list.html', context={'candidates' : selected})
 
 def voteForm(request, id):
     if request.method == 'GET':
@@ -81,9 +79,7 @@ def voteForm(request, id):
         form = electorForm(request.POST)
         selectedCandidate = Candidate.objects.get(cpf = id)
         electors = Elector.objects.all()
-        print(selectedCandidate.cpf)
         e = Election.objects.get(lawsuit = selectedCandidate.Election)
-        print(e)
         if form.is_valid():
             cpf = form.cleaned_data.get("cpf")
             flag = True
@@ -92,29 +88,26 @@ def voteForm(request, id):
                 if i.cpf == cpf:
                     flag = False
                     f = True
-                    print(i.Election.all())
                     for x in i.Election.all():
                         if x == e:
                             f = False
-                            break;
+                            break
                             
                         
                     if f:
-                        print(x)
                         i.Election.add(e)
                         i.save()
                         selectedCandidate.nElectors += 1
                         selectedCandidate.save()
                         return redirect('listElections')
-                    else:
-                        print('erro')
+
+                    
             if flag:
                 obj = Elector.objects.create(cpf=cpf, Candidate=selectedCandidate)
                 obj.save()
                 obj.Election.add(e)
                 selectedCandidate.nElectors += 1
                 selectedCandidate.save()
-                print('UEEEEEEEEPA')
                 return redirect('listElections')
         return render(request, 'systemElections/vote_form.html', context = {'voteForm': form})
 
