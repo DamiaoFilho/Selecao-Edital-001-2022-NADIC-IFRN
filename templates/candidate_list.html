@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <table>
+        <tr>
+            <th>Nome</th>
+            <th>CPF</th>
+            <th>Nascimento</th>
+            <th>Endereço</th>
+            <th>#</th>
+        </tr>
+        {% for candidates in candidates %}
+        <tr>
+            <th>{{candidates.name}}</th>
+            <th>{{candidates.cpf}}</th>
+            <th>{{candidates.birth}}</th>
+            <th>{{candidates.address}}</th>
+            <td><a href="{% url 'vote' candidates.cpf %}">Votar</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+    
+</body>
+</html>
